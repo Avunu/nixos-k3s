@@ -103,7 +103,10 @@
                   - mounts
                   - set-passwords
                   - ssh
-                cloud_final_modules: []
+                cloud_final_modules:
+                  - scripts-user
+                runcmd:
+                  - [ sed, -i, "s/\$\{HOSTNAME\}/$(hostname)/g", "/etc/iscsi/initiatorname.iscsi" ]
               '';
             };
 
@@ -125,7 +128,7 @@
 
             openiscsi = {
               enable = true;
-              name = "iqn.2024-01.org.nixos:01:${config.networking.hostName}";
+              name = "iqn.2024-01.org.nixos:01:$\{HOSTNAME}";
             };
 
             services.openssh = {
