@@ -21,9 +21,12 @@
               "vm.nr_hugepages" = 1024;
             };
             kernelModules = [
-              "vfio_pci"
-              "uio_pci_generic"
+              "nbd"
+              "nvme-rdma"
               "nvme-tcp"
+              "uio_pci_generic"
+              "vfio_pci"
+              "iscsi_tcp"
             ];
             kernelPackages = pkgs.linuxPackages_latest;
             loader.grub.device = "/dev/sda";
@@ -35,6 +38,13 @@
             man.enable = false;
             nixos.enable = false;
           };
+
+          environment.systemPackages = with pkgs; [
+            openiscsi
+            libiscsi
+            nfs-utils
+            nvme-cli
+          ];
 
           imports = [
             "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
@@ -64,6 +74,7 @@
           };
 
           services = {
+
             cloud-init = {
               enable = true;
               network.enable = true;
@@ -109,9 +120,15 @@
               interval = "daily";
             };
 
+            openiscsi = {
+              enable = true;
+              name = "iqn.2024-01.org.nixos:01:${config.networking.hostName}";
+            };
+            
             openssh.enable = true;
 
             qemuGuest.enable = true;
+
           };
 
           users.users.ops = {
@@ -132,6 +149,11 @@
               };
               randomizedDelaySec = "45min";
             };
+            build.image = import "${nixpkgs}/nixos/lib/make-disk-image.nix" {
+              inherit config lib pkgs;
+              format = "qcow2-compressed";
+              installBootLoader = true;
+            };
             stateVersion = "24.05";
           };
 
@@ -140,8 +162,8 @@
     in
     {
       packages.${system} = {
-        serverImage = self.nixosConfigurations.server.config.system.build.openstackImage;
-        agentImage = self.nixosConfigurations.agent.config.system.build.openstackImage;
+        serverImage = self.nixosConfigurations.server.config.system.build.image;
+        agentImage = self.nixosConfigurations.agent.config.system.build.image;
       };
 
       nixosConfigurations = {
@@ -168,35 +190,35 @@
             )
           ];
         };
-      };
 
-      server = lib.nixosSystem {
-        inherit system;
-        modules = [
-          commonModule
-          (
-            { config, pkgs, ... }:
-            {
-              # Server-specific configuration
-              services.k3s = {
-                extraFlags = [
-                  "--cluster-cidr 10.42.0.0/16"
-                  "--service-cidr 10.43.0.0/16"
-                  "--cluster-dns 10.43.0.10"
-                  "--flannel-backend none" # We'll use Calico for networking
-                ];
-                role = "server";
-                disableAgent = true;
-              };
+        server = lib.nixosSystem {
+          inherit system;
+          modules = [
+            commonModule
+            (
+              { config, pkgs, ... }:
+              {
+                # Server-specific configuration
+                services.k3s = {
+                  extraFlags = [
+                    "--cluster-cidr 10.42.0.0/16"
+                    "--service-cidr 10.43.0.0/16"
+                    "--cluster-dns 10.43.0.10"
+                    "--flannel-backend none" # We'll use Calico for networking
+                  ];
+                  role = "server";
+                  disableAgent = true;
+                };
 
-              # Auto-upgrade settings
-              system.autoUpgrade = {
-                flake = "github:avunu/k3s#server";
-                allowReboot = false;
-              };
-            }
-          )
-        ];
+                # Auto-upgrade settings
+                system.autoUpgrade = {
+                  flake = "github:avunu/k3s#server";
+                  allowReboot = false;
+                };
+              }
+            )
+          ];
+        };
       };
     };
 }
