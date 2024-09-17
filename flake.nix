@@ -84,33 +84,7 @@
             cloud-init = {
               enable = true;
               network.enable = true;
-              config = ''
-                system_info:
-                  distro: nixos
-                  network:
-                    renderers: [ 'networkd' ]
-                  default_user:
-                    name: ops
-                users:
-                    - default
-                ssh_pwauth: false
-                chpasswd:
-                  expire: false
-                cloud_init_modules:
-                  - migrator
-                  - seed_random
-                  - growpart
-                  - resizefs
-                cloud_config_modules:
-                  - disk_setup
-                  - mounts
-                  - set-passwords
-                  - ssh
-                cloud_final_modules:
-                  - scripts-user
-                runcmd:
-                  - [ sed, -i, "s/\$\{HOSTNAME\}/$(hostname)/g", "/etc/iscsi/initiatorname.iscsi" ]
-              '';
+              config = builtins.readFile ./cloud-init.yaml;
             };
 
             k3s = {
