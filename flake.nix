@@ -191,7 +191,7 @@
 
                 # Auto-upgrade settings
                 system.autoUpgrade = {
-                  flake = "github:avunu/k3s#agent";
+                  flake = "github:avunu/nixos-k3s#agent";
                   allowReboot = true;
                 };
               }
@@ -220,7 +220,7 @@
 
                 # Auto-upgrade settings
                 system.autoUpgrade = {
-                  flake = "github:avunu/k3s#server";
+                  flake = "github:avunu/nixos-k3s#server";
                   allowReboot = false;
                 };
               }
