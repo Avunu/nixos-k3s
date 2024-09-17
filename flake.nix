@@ -131,7 +131,7 @@
               name = "iqn.2024-01.org.nixos:01:$\{HOSTNAME}";
             };
 
-            services.openssh = {
+            openssh = {
               enable = true;
               permitRootLogin = "no";
               passwordAuthentication = false;
