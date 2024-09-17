@@ -44,6 +44,9 @@
             libiscsi
             nfs-utils
             nvme-cli
+            coreutils
+            bashInteractive
+            util-linux
           ];
 
           imports = [
@@ -124,8 +127,12 @@
               enable = true;
               name = "iqn.2024-01.org.nixos:01:${config.networking.hostName}";
             };
-            
-            openssh.enable = true;
+
+            services.openssh = {
+              enable = true;
+              permitRootLogin = "no";
+              passwordAuthentication = false;
+            };
 
             qemuGuest.enable = true;
 
@@ -135,8 +142,6 @@
             isNormalUser = true;
             extraGroups = [ "wheel" ];
           };
-
-          systemd.network.enable = true;
 
           security.sudo.wheelNeedsPassword = false;
 
