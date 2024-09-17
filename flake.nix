@@ -217,16 +217,16 @@
                 services.k3s = {
                   manifests = {
                     longhorn = {
-                      source = readYamlFile ./manifests/longhorn.yaml;
+                      source = builtins.readFile ./manifests/longhorn.yaml;
                     };
                     prometheus = {
-                      source = readYamlFile ./manifests/prometheus.yaml;
+                      source = builtins.readFile ./manifests/prometheus.yaml;
                     };
                     kubeStateMetrics = {
-                      source = readYamlFile ./manifests/kube-state-metrics.yaml;
+                      source = builtins.readFile ./manifests/kube-state-metrics.yaml;
                     };
                     certManager = {
-                      source = readYamlFile ./manifests/cert-manager.yaml;
+                      source = builtins.readFile ./manifests/cert-manager.yaml;
                     };
                   };
                   role = "server";
