@@ -3,10 +3,28 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    longhorn = {
+      url = "github:longhorn/longhorn";
+      flake = false;
+      rev = "v1.7.1";
+    };
+
+    prometheus = {
+      url = "github:prometheus-operator/prometheus-operator";
+      flake = false;
+      rev = "v0.76.2";
+    };
   };
 
   outputs =
-    { self, nixpkgs, ... }:
+    {
+      self,
+      nixpkgs,
+      longhorn,
+      prometheus,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
@@ -113,9 +131,13 @@
             k3s = {
               enable = true;
               extraFlags = [
-                "--disable traefik" # Disable default ingress as we'll use Octavia
-                "--disable servicelb" # Disable default load balancer
-                "--disable local-storage" # Disable default storage as we'll use Longhorn
+                "--cluster-cidr=10.42.0.0/16"
+                "--service-cidr=10.43.0.0/16"
+                "--cluster-dns=10.43.0.10"
+                "--flannel-backend=vxlan"
+                "--disable=traefik"
+                "--disable=servicelb"
+                "--disable=local-storage"
               ];
               tokenFile = "/etc/k3s/tokenFile";
               environmentFile = "/etc/k3s/envs";
@@ -208,12 +230,73 @@
               {
                 # Server-specific configuration
                 services.k3s = {
-                  extraFlags = [
-                    "--cluster-cidr 10.42.0.0/16"
-                    "--service-cidr 10.43.0.0/16"
-                    "--cluster-dns 10.43.0.10"
-                    "--flannel-backend none" # We'll use Calico for networking
-                  ];
+                  # extraFlags = [
+                  #   "--cluster-cidr 10.42.0.0/16"
+                  #   "--service-cidr 10.43.0.0/16"
+                  #   "--cluster-dns 10.43.0.10"
+                  # ];
+                  manifests = {
+                    longhorn = {
+                      source = "${longhorn}/deploy/longhorn.yaml";
+                    };
+                    # Deploy Prometheus using HelmChart resource
+                    prometheus = {
+                      source = ''
+                        apiVersion: helm.cattle.io/v1
+                        kind: HelmChart
+                        metadata:
+                          name: prometheus
+                          namespace: kube-system
+                        spec:
+                          chart: prometheus-community/prometheus
+                          version: "20.0.1"
+                          repo: https://prometheus-community.github.io/helm-charts
+                          targetNamespace: monitoring
+                          valuesContent: |-
+                            alertmanager:
+                              enabled: true
+                            server:
+                              persistentVolume:
+                                enabled: true
+                                size: 8Gi
+                      '';
+                    };
+
+                    # Deploy kube-state-metrics using HelmChart resource
+                    kubeStateMetrics = {
+                      source = ''
+                        apiVersion: helm.cattle.io/v1
+                        kind: HelmChart
+                        metadata:
+                          name: kube-state-metrics
+                          namespace: kube-system
+                        spec:
+                          chart: prometheus-community/kube-state-metrics
+                          version: "5.11.5"
+                          repo: https://prometheus-community.github.io/helm-charts
+                          targetNamespace: monitoring
+                      '';
+                    };
+
+                    # Deploy cert-manager using HelmChart resource
+                    certManager = {
+                      source = ''
+                        apiVersion: helm.cattle.io/v1
+                        kind: HelmChart
+                        metadata:
+                          name: cert-manager
+                          namespace: kube-system
+                        spec:
+                          chart: jetstack/cert-manager
+                          version: "v1.12.0"
+                          repo: https://charts.jetstack.io
+                          targetNamespace: cert-manager
+                          set:
+                            installCRDs: "true"
+                      '';
+                    };
+
+                  };
                   role = "server";
                   disableAgent = true;
                 };
