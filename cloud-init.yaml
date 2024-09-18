@@ -19,7 +19,7 @@ cloud_config_modules:
   - mounts
   - set-passwords
   - ssh
-cloud_final_modules:
-  - scripts-user
-runcmd:
-  - [ sed, -i, "s/\$\{HOSTNAME\}/$(hostname)/g", "/etc/iscsi/initiatorname.iscsi" ]
+# cloud_final_modules:
+#   - scripts-user
+# runcmd:
+#   - [ sed, -i, "s/\$\{HOSTNAME\}/$(hostname)/g", "/etc/iscsi/initiatorname.iscsi" ]

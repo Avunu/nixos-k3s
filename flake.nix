@@ -1,6 +1,4 @@
 {
-  description = "Nix flake for building NixOS images for k3s server and agent nodes using cloud-init, with common configuration module";
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
@@ -43,12 +41,13 @@
           };
 
           environment.systemPackages = with pkgs; [
-            openiscsi
+            bashInteractive
+            coreutils
+            libiscsi
             libiscsi
             nfs-utils
             nvme-cli
-            coreutils
-            bashInteractive
+            openiscsi
             util-linux
           ];
 
@@ -105,11 +104,6 @@
             fstrim = {
               enable = true;
               interval = "daily";
-            };
-
-            openiscsi = {
-              enable = true;
-              name = "iqn.2024-01.org.nixos:01:$\{HOSTNAME}";
             };
 
             openssh = {
