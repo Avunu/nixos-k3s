@@ -106,10 +106,17 @@
               interval = "daily";
             };
 
+            openiscsi = {
+              enable = true;
+              name = "iqn.2021-05.io.avunu.k3s:" + builtins.readFile "/etc/hostname";
+            };
+
             openssh = {
               enable = true;
-              permitRootLogin = "no";
-              passwordAuthentication = false;
+              settings = {
+                PermitRootLogin = "no";
+                PasswordAuthentication = false;
+              };
             };
 
             qemuGuest.enable = true;
@@ -126,6 +133,9 @@
           system = {
             autoUpgrade = {
               enable = true;
+              flags = [
+                "--impure"
+              ];
               rebootWindow = {
                 lower = "01:00";
                 upper = "05:00";
@@ -184,18 +194,10 @@
                 # Server-specific configuration
                 services.k3s = {
                   manifests = {
-                    longhorn = {
-                      source = builtins.readFile ./manifests/longhorn.yaml;
-                    };
-                    prometheus = {
-                      source = builtins.readFile ./manifests/prometheus.yaml;
-                    };
-                    kubeStateMetrics = {
-                      source = builtins.readFile ./manifests/kube-state-metrics.yaml;
-                    };
-                    certManager = {
-                      source = builtins.readFile ./manifests/cert-manager.yaml;
-                    };
+                    longhorn = builtins.readFile ./manifests/longhorn.yaml;
+                    prometheus = builtins.readFile ./manifests/prometheus.yaml;
+                    kubeStateMetrics = builtins.readFile ./manifests/kube-state-metrics.yaml;
+                    certManager = builtins.readFile ./manifests/cert-manager.yaml;
                   };
                   role = "server";
                   disableAgent = true;

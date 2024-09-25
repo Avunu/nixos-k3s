@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   chart: longhorn/longhorn
-  version: "1.7.1"  # Adjust this to the version you want to use
+  version: "1.7.1"
   repo: https://charts.longhorn.io
   targetNamespace: longhorn-system
   valuesContent: |-
