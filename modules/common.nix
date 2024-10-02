@@ -13,7 +13,13 @@
       "iscsi_tcp"
     ];
     kernelPackages = pkgs.linuxPackages_latest;
-    loader.grub.device = "/dev/sda";
+    loader = {
+      efi.canTouchEfiVariables = mkDefault true;
+      systemd-boot = {
+        configurationLimit = mkDefault 10;
+        enable = mkDefault true;
+      };
+    };
   };
 
   documentation = {
@@ -54,11 +60,6 @@
       "nix-command"
       "flakes"
     ];
-  };
-
-  fileSystems."/" = {
-    device = "/dev/sda1";
-    fsType = "ext4";
   };
 
   services = {
@@ -134,6 +135,13 @@
       installBootLoader = true;
     };
     stateVersion = "24.05";
+  };
+
+  virtualisation.podman = {
+    defaultNetwork.settings.dns_enabled = false;
+    dockerCompat = true;
+    dockerSocket.enable = true;
+    enable = true;
   };
 
   zramSwap.enable = true;

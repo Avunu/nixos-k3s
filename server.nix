@@ -11,6 +11,11 @@
     domainName = "k3s.avunu.io";
   };
 
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos-root";
+    fsType = "ext4";
+  };
+
   networking.hostName = "k3s-master";
 
   # Server-specific configuration
