@@ -80,6 +80,7 @@
         "--disable=traefik"
         "--disable=servicelb"
         "--disable=local-storage"
+        "--container-runtime-endpoint=unix:///run/containerd/containerd.sock"
       ];
       tokenFile = "/etc/k3s/tokenFile";
       environmentFile = "/etc/k3s/envs";
@@ -109,9 +110,13 @@
 
   users.users.ops = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [
+      "podman"
+      "wheel"
+    ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILPvVYtcFHwuW/QW5Sqyuno7KrsVjvC/2C3Ohx3nxDQA" # Replace with your actual public key
+      builtins.getEnv
+      "SSH_PUBKEY"
     ];
   };
 
@@ -137,11 +142,11 @@
     stateVersion = "24.05";
   };
 
-  virtualisation.podman = {
-    defaultNetwork.settings.dns_enabled = false;
-    dockerCompat = true;
-    dockerSocket.enable = true;
-    enable = true;
+  virtualisation = {
+    containerd = {
+      enable = true;
+      extraConfig = builtins.readFile ./containerd.toml;
+    };
   };
 
   zramSwap.enable = true;

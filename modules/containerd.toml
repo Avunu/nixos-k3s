@@ -1,0 +1,14 @@
+[plugins."io.containerd.snapshotter.v1.btrfs"]
+root_path = "/var/lib/containerd/io.containerd.snapshotter.v1.btrfs"
+rootfs_type = "btrfs"
+
+[containerd]
+default_snapshotter = "btrfs"
+
+[plugins."io.containerd.grpc.v1.cri"]
+device_ownership_from_security_context = true
+cni.bin_dir = "/opt/cni/bin/"
+cni.conf_dir = "/var/lib/rancher/k3s/agent/etc/cni/net.d/"
+
+[plugins."io.containerd.grpc.v1.cri".containerd]
+snapshotter = "btrfs"
