@@ -53,6 +53,8 @@
       disableAgent = true;
     };
 
+    qemuGuest.enable = true;
+
   };
 
   # Auto-upgrade settings
@@ -60,6 +62,4 @@
     flake = "github:avunu/nixos-k3s#master";
     allowReboot = false;
   };
-
-  virtualisation.qemu.guestAgent.enable = true;
 }

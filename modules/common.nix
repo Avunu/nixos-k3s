@@ -5,7 +5,7 @@
   ...
 }:
 let
-  kernel = pkgs.linuxPackages_latest.overrideAttrs (oldAttrs: {
+  kernel = pkgs.linuxPackages_latest.kernel.overrideAttrs (oldAttrs: {
     # optimizations
     extraConfig = ''
       CC = "${pkgs.llvmPackages_19.clang}/bin/clang";
@@ -28,7 +28,12 @@ in
       "vfio_pci"
       "iscsi_tcp"
     ];
-    kernelPackages = kernel;
+    kernelPackages = pkgs.recurseIntoAttrs (
+      pkgs.linuxPackages_latest
+      // {
+        kernel = kernel;
+      }
+    );
     loader = {
       efi.canTouchEfiVariables = true;
       systemd-boot = {
@@ -132,7 +137,6 @@ in
   users.users.ops = {
     isNormalUser = true;
     extraGroups = [
-      "podman"
       "wheel"
     ];
     openssh.authorizedKeys.keys = [
