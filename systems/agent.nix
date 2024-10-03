@@ -17,7 +17,7 @@
       "vfio_pci"
       "iscsi_tcp"
     ];
-    kernelPackages = pkgs.linuxPackages_agent;
+    kernelPackages = pkgs.linuxPackages_metal;
   };
 
   # root file system

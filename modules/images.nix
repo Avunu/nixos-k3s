@@ -11,9 +11,10 @@
       image = lib.mkForce (
         pkgs.callPackage "${pkgs.path}/nixos/lib/make-disk-image.nix" {
           inherit config lib pkgs;
-          format = "qcow2-compressed";
           diskSize = 8192;
+          format = "qcow2-compressed";
           installBootLoader = true;
+          partitionTableType = "efi";
         }
       );
 

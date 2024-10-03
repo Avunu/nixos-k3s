@@ -10,7 +10,8 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
-          (import ./overlays/kernel.nix)
+          (import ./overlays/kernel-metal.nix)
+          (import ./overlays/kernel-virtio.nix)
         ];
       };
       lib = nixpkgs.lib;
@@ -19,17 +20,17 @@
       nixosConfigurations = {
         agent = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./agent.nix ];
+          modules = [ ./systems/agent.nix ];
         };
 
         master = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./master.nix ];
+          modules = [ ./systems/master.nix ];
         };
 
         test = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./modules/test/test.nix ];
+          modules = [ ./systems/test/test.nix ];
         };
       };
 

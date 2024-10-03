@@ -6,6 +6,7 @@
 }:
 {
   boot = {
+    growPartition = true;
     initrd = {
       availableKernelModules = [
         "virtio_net"
@@ -20,21 +21,27 @@
         "virtio_rng"
       ];
     };
-    kernelPackages = pkgs.linuxPackages_master;
+    kernelPackages = pkgs.linuxPackages_virtio;
   };
 
   imports = [
-    ./modules/k3s-manifests.nix
-    ./modules/netboot/server.nix
-    ./modules/common.nix
+    ../modules/k3s-manifests.nix
+    ../modules/netboot/server.nix
+    ../modules/common.nix
     (import <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>)
   ];
 
   environment.systemPackages = [ pkgs.efibootmgr ];
 
   fileSystems."/" = {
-    device = "/dev/vda";
+    device = "/dev/disk/by-label/nixos";
+    autoResize = true;
     fsType = "ext4";
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/ESP";
+    fsType = "vfat";
   };
 
   networking.hostName = "k3s-master";
