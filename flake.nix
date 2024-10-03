@@ -7,33 +7,43 @@
     { self, nixpkgs, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
       lib = nixpkgs.lib;
+
+      makeImage =
+        config:
+        pkgs.nixos.lib.makeImage {
+          inherit (config.system) build;
+          inherit pkgs lib;
+          format = "qcow2-compressed";
+          installBootLoader = true;
+        };
     in
     {
-      packages.${system} = {
-        agentImage = self.nixosConfigurations.agent.config.system.build.image;
-        masterImage = self.nixosConfigurations.master.config.system.build.image;
-      };
-
       nixosConfigurations = {
-
         agent = lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit pkgs; };
-          modules = [
-            ./agent.nix
-          ];
+          modules = [ ./agent.nix ];
         };
 
         master = lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit pkgs; };
-          modules = [
-            ./master.nix
-          ];
+          modules = [ ./master.nix ];
         };
 
+        test = lib.nixosSystem {
+          inherit system;
+          modules = [ ./test.nix ];
+        };
+      };
+
+      packages.${system} = {
+        agentImage = makeImage self.nixosConfigurations.agent.config;
+        masterImage = makeImage self.nixosConfigurations.master.config;
+        testImage = makeImage self.nixosConfigurations.test.config;
       };
     };
 }

@@ -70,10 +70,19 @@ in
       dates = "weekly";
       options = "--delete-older-than 7d";
     };
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      substituters = [
+        "https://cache.nixos.org"
+        "https://attic.batonac.com/k3s"
+      ];
+      trusted-public-keys = [
+        "k3s:A8GYNJNy2p/ZMtxVlKuy1nZ8bnZ84PVfqPO6kg6A6qY="
+      ];
+    };
   };
 
   services = {
@@ -150,11 +159,6 @@ in
         upper = "05:00";
       };
       randomizedDelaySec = "45min";
-    };
-    build.image = pkgs.nixos.lib.makeImage {
-      inherit config lib pkgs;
-      format = "qcow2-compressed";
-      installBootLoader = true;
     };
     stateVersion = "24.05";
   };
