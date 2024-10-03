@@ -19,14 +19,16 @@
       nixosConfigurations = {
 
         agent = lib.nixosSystem {
-          inherit system pkgs;
+          inherit system;
+          specialArgs = { inherit pkgs; };
           modules = [
             ./agent.nix
           ];
         };
 
         master = lib.nixosSystem {
-          inherit system pkgs;
+          inherit system;
+          specialArgs = { inherit pkgs; };
           modules = [
             ./master.nix
           ];

@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   kernel = pkgs.linuxPackages_latest.overrideAttrs (oldAttrs: {
     # optimizations
@@ -51,9 +56,7 @@ in
     util-linux
   ];
 
-  imports = [
-    "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
-  ];
+  imports = [ "${pkgs.path}/nixos/modules/profiles/qemu-guest.nix" ];
 
   networking = {
     dhcpcd.enable = false;
@@ -149,7 +152,7 @@ in
       };
       randomizedDelaySec = "45min";
     };
-    build.image = import "${nixpkgs}/nixos/lib/make-disk-image.nix" {
+    build.image = pkgs.nixos.lib.makeImage {
       inherit config lib pkgs;
       format = "qcow2-compressed";
       installBootLoader = true;
