@@ -21,7 +21,7 @@
   };
 
   imports = [
-    ./modules/k3s-services.nix
+    ./modules/k3s-manifests.nix
     ./modules/netboot/server.nix
     ./modules/common.nix
   ];
