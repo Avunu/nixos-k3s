@@ -1,4 +1,15 @@
 { config, pkgs, ... }:
+let
+  kernel = pkgs.linuxPackages_latest.overrideAttrs (oldAttrs: {
+    # optimizations
+    extraConfig = ''
+      CC = "${pkgs.llvmPackages_19.clang}/bin/clang";
+      CXX = "${pkgs.llvmPackages_19.clang}/bin/clang++";
+      CFLAGS="$CFLAGS -march=x86-64-v4 -mtune=x86-64-v4 -O3 -flto"
+      LDFLAGS="$LDFLAGS -flto"
+    '';
+  });
+in
 {
   boot = {
     kernel.sysctl = {
@@ -12,7 +23,7 @@
       "vfio_pci"
       "iscsi_tcp"
     ];
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = kernel;
     loader = {
       efi.canTouchEfiVariables = mkDefault true;
       systemd-boot = {

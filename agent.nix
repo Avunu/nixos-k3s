@@ -1,10 +1,15 @@
 { config, pkgs, ... }:
 {
+  imports = [
+    ./modules/netboot/client.nix
+    ./modules/common.nix
+  ];
+
   # root file system
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos-root";
     fsType = "btrfs";
-    options = [ "subvol=@" ];
+    options = [ "subvol=@" "compress=zstd" ];
   };
 
   # Agent-specific configuration

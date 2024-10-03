@@ -13,7 +13,7 @@
     {
       packages.${system} = {
         agentImage = self.nixosConfigurations.agent.config.system.build.image;
-        serverImage = self.nixosConfigurations.server.config.system.build.image;
+        masterImage = self.nixosConfigurations.master.config.system.build.image;
       };
 
       nixosConfigurations = {
@@ -25,10 +25,10 @@
           ];
         };
 
-        server = lib.nixosSystem {
+        master = lib.nixosSystem {
           inherit system pkgs;
           modules = [
-            ./server.nix
+            ./master.nix
           ];
         };
 

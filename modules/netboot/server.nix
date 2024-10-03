@@ -1,11 +1,17 @@
 # modules/netboot-server.nix
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
 let
   cfg = config.netboot;
-in {
+in
+{
   options.netboot = {
     interface = mkOption {
       type = types.str;
@@ -66,8 +72,12 @@ in {
 
     # Open necessary ports
     networking.firewall = {
-      allowedTCPPorts = [ 69 ];  # TFTP
-      allowedUDPPorts = [ 67 68 69 ];  # DHCP and TFTP
+      allowedTCPPorts = [ 69 ]; # TFTP
+      allowedUDPPorts = [
+        67
+        68
+        69
+      ]; # DHCP and TFTP
     };
   };
 }

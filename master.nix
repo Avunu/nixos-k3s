@@ -2,6 +2,7 @@
 {
   imports = [
     ./modules/k3s-services.nix
+    ./modules/netboot/server.nix
     ./modules/common.nix
   ];
 
@@ -26,7 +27,7 @@
 
   # Auto-upgrade settings
   system.autoUpgrade = {
-    flake = "github:avunu/nixos-k3s#server";
+    flake = "github:avunu/nixos-k3s#master";
     allowReboot = false;
   };
 }
