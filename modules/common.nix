@@ -4,36 +4,8 @@
   pkgs,
   ...
 }:
-let
-  kernel = pkgs.linuxPackages_latest.kernel.overrideAttrs (oldAttrs: {
-    # optimizations
-    extraConfig = ''
-      CC = "${pkgs.llvmPackages_19.clang}/bin/clang";
-      CXX = "${pkgs.llvmPackages_19.clang}/bin/clang++";
-      CFLAGS="$CFLAGS -march=x86-64-v4 -mtune=x86-64-v4 -O3 -flto"
-      LDFLAGS="$LDFLAGS -flto"
-    '';
-  });
-in
 {
   boot = {
-    kernel.sysctl = {
-      "vm.nr_hugepages" = 1024;
-    };
-    kernelModules = [
-      "nbd"
-      "nvme-rdma"
-      "nvme-tcp"
-      "uio_pci_generic"
-      "vfio_pci"
-      "iscsi_tcp"
-    ];
-    kernelPackages = pkgs.recurseIntoAttrs (
-      pkgs.linuxPackages_latest
-      // {
-        kernel = kernel;
-      }
-    );
     loader = {
       efi.canTouchEfiVariables = true;
       systemd-boot = {
@@ -140,8 +112,7 @@ in
       "wheel"
     ];
     openssh.authorizedKeys.keys = [
-      builtins.getEnv
-      "SSH_PUBKEY"
+      (builtins.readFile "/etc/pubkey")
     ];
   };
 

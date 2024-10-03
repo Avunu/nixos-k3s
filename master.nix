@@ -5,32 +5,32 @@
   ...
 }:
 {
-  boot.initrd = {
-    availableKernelModules = [
-      "virtio_net"
-      "virtio_pci"
-      "virtio_mmio"
-      "virtio_blk"
-      "virtio_scsi"
-    ];
-    kernelModules = [
-      "virtio_balloon"
-      "virtio_console"
-      "virtio_rng"
-    ];
+  boot = {
+    initrd = {
+      availableKernelModules = [
+        "virtio_net"
+        "virtio_pci"
+        "virtio_mmio"
+        "virtio_blk"
+        "virtio_scsi"
+      ];
+      kernelModules = [
+        "virtio_balloon"
+        "virtio_console"
+        "virtio_rng"
+      ];
+    };
+    kernelPackages = pkgs.linuxPackages_master;
   };
 
   imports = [
     ./modules/k3s-manifests.nix
     ./modules/netboot/server.nix
     ./modules/common.nix
+    (import <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>)
   ];
 
-  netboot = {
-    interface = "enp0s3";
-    ipRange = "192.168.1.100,192.168.1.200";
-    domainName = "k3s.local";
-  };
+  environment.systemPackages = [ pkgs.efibootmgr ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos-root";
@@ -38,6 +38,12 @@
   };
 
   networking.hostName = "k3s-master";
+
+  netboot = {
+    interface = "enp0s3";
+    ipRange = "192.168.1.100,192.168.1.200";
+    domainName = "k3s.local";
+  };
 
   # Server-specific configuration
   services = {
@@ -61,5 +67,11 @@
   system.autoUpgrade = {
     flake = "github:avunu/nixos-k3s#master";
     allowReboot = false;
+  };
+
+  virtualisation = {
+    useBootLoader = true;
+    useEFIBoot = true;
+    bootDevice = "/dev/vda";
   };
 }
