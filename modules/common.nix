@@ -56,6 +56,10 @@ in
     util-linux
   ];
 
+  imports = [
+    ./images.nix
+  ];
+
   networking = {
     dhcpcd.enable = false;
     interfaces.eth0.useDHCP = false;

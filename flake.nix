@@ -1,19 +1,9 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      nixos-generators,
-      ...
-    }:
+  outputs = { self, nixpkgs, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -21,20 +11,6 @@
         config.allowUnfree = true;
       };
       lib = nixpkgs.lib;
-
-      makeImage =
-        config: format:
-        nixos-generators.nixosGenerate {
-          inherit pkgs;
-          format = format;
-          modules = [
-            config
-            {
-              imports = [ "${pkgs.path}/nixos/modules/profiles/qemu-guest.nix" ];
-            }
-          ];
-        };
-
     in
     {
       nixosConfigurations = {
@@ -50,18 +26,18 @@
 
         test = lib.nixosSystem {
           inherit system;
-          modules = [ ./test.nix ];
+          modules = [ ./modules/test/test.nix ];
         };
       };
 
       packages.${system} = {
-        agentImage = makeImage self.nixosConfigurations.agent.config "qcow";
-        masterImage = makeImage self.nixosConfigurations.master.config "qcow";
-        testImage = makeImage self.nixosConfigurations.test.config "qcow";
+        agentImage = self.nixosConfigurations.agent.config.system.build.image;
+        masterImage = self.nixosConfigurations.master.config.system.build.image;
+        testImage = self.nixosConfigurations.test.config.system.build.image;
 
-        agentInstallISO = makeImage self.nixosConfigurations.agent.config "iso";
-        masterInstallISO = makeImage self.nixosConfigurations.master.config "iso";
-        testInstallISO = makeImage self.nixosConfigurations.test.config "iso";
+        agentInstallISO = self.nixosConfigurations.agent.config.system.build.isoImage;
+        masterInstallISO = self.nixosConfigurations.master.config.system.build.isoImage;
+        testInstallISO = self.nixosConfigurations.test.config.system.build.isoImage;
       };
     };
 }
