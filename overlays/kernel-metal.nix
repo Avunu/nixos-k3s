@@ -23,9 +23,9 @@ self: super: {
             ATA_PIIX = yes;
 
             # Filesystems (adjust as needed)
-            EXT4_FS = yes;
+            EXT4_FS = no;
             BTRFS_FS = yes;
-            XFS_FS = yes;
+            XFS_FS = no;
             FUSE_FS = yes;
 
             # Other essential features
