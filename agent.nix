@@ -15,9 +15,9 @@
   # Agent-specific configuration
   services = {
     btrfs.autoScrub = {
-      enable = mkDefault true;
-      fileSystems = mkDefault [ "/" ];
-      interval = mkDefault "daily";
+      enable = true;
+      fileSystems = [ "/" ];
+      interval = "daily";
     };
 
     k3s = {

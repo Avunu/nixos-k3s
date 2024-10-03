@@ -36,25 +36,25 @@ mount "$DRIVE1" /mnt  # We can mount either drive, BTRFS will handle the RAID1
 
 # Create BTRFS subvolumes
 btrfs subvolume create /mnt/@
-btrfs subvolume create /mnt/@home
 
 # Unmount and remount with subvolumes
 umount /mnt
 mount -o subvol=@ "$DRIVE1" /mnt
-mkdir /mnt/home
-mount -o subvol=@home "$DRIVE1" /mnt/home
 
 # Generate NixOS configuration
 nixos-generate-config --root /mnt
 
 # Download flake.agent.nix from GitHub and rename it
-download_from_github "your-repo/nixos-config" "flake.agent.nix" "/mnt/etc/nixos/flake.nix"
+download_from_github "Avunu/nixos-k3s" "install/flake.agent.nix" "/mnt/etc/nixos/flake.nix"
 
 # Download and place required files
 mkdir -p /mnt/etc/k3s
-download_from_github "your-repo/nixos-config" "environment" "/mnt/etc/environment"
-download_from_github "your-repo/nixos-config" "tokenFile" "/mnt/etc/k3s/tokenFile"
-download_from_github "your-repo/nixos-config" "envs" "/mnt/etc/k3s/envs"
+download_from_github "Avunu/nixos-k3s-configs" "environment" "/mnt/etc/environment"
+download_from_github "Avunu/nixos-k3s-configs" "tokenFile" "/mnt/etc/k3s/tokenFile"
+download_from_github "Avunu/nixos-k3s-configs" "envs" "/mnt/etc/k3s/envs"
+
+# fix permissions
+chmod 600 /mnt/etc/k3s/tokenFile
 
 # Install NixOS
 nixos-install --flake /mnt/etc/nixos#

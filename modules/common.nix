@@ -25,10 +25,10 @@ in
     ];
     kernelPackages = kernel;
     loader = {
-      efi.canTouchEfiVariables = mkDefault true;
+      efi.canTouchEfiVariables = true;
       systemd-boot = {
-        configurationLimit = mkDefault 10;
-        enable = mkDefault true;
+        configurationLimit = 10;
+        enable = true;
       };
     };
   };
@@ -85,14 +85,17 @@ in
       enable = true;
       extraFlags = [
         "--cluster-cidr=10.42.0.0/16"
-        "--service-cidr=10.43.0.0/16"
         "--cluster-dns=10.43.0.10"
-        "--flannel-backend=vxlan"
-        "--disable=traefik"
-        "--disable=servicelb"
-        "--disable=local-storage"
-        "--docker"
         "--container-runtime-endpoint=unix:///run/podman/podman.sock"
+        "--disable-cloud-controller"
+        "--disable=local-storage"
+        "--disable=servicelb"
+        "--disable=traefik"
+        "--docker"
+        "--flannel-backend=vxlan"
+        "--kubelet-arg='cloud-provider=external'"
+        "--kubelet-arg='provider-id=openstack://$master_id'"
+        "--service-cidr=10.43.0.0/16"
       ];
       tokenFile = "/etc/k3s/tokenFile";
       environmentFile = "/etc/k3s/envs";
