@@ -1,10 +1,19 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { self, nixpkgs, ... }:
+    {
+      self,
+      nixpkgs,
+      nixos-generators,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -14,13 +23,18 @@
       lib = nixpkgs.lib;
 
       makeImage =
-        config:
-        pkgs.nixos.lib.makeImage {
-          inherit (config.system) build;
-          inherit pkgs lib;
-          format = "qcow2-compressed";
-          installBootLoader = true;
+        config: format:
+        nixos-generators.nixosGenerate {
+          inherit pkgs;
+          format = format;
+          modules = [
+            config
+            {
+              imports = [ "${pkgs.path}/nixos/modules/profiles/qemu-guest.nix" ];
+            }
+          ];
         };
+
     in
     {
       nixosConfigurations = {
@@ -41,9 +55,13 @@
       };
 
       packages.${system} = {
-        agentImage = makeImage self.nixosConfigurations.agent.config;
-        masterImage = makeImage self.nixosConfigurations.master.config;
-        testImage = makeImage self.nixosConfigurations.test.config;
+        agentImage = makeImage self.nixosConfigurations.agent.config "qcow";
+        masterImage = makeImage self.nixosConfigurations.master.config "qcow";
+        testImage = makeImage self.nixosConfigurations.test.config "qcow";
+
+        agentInstallISO = makeImage self.nixosConfigurations.agent.config "iso";
+        masterInstallISO = makeImage self.nixosConfigurations.master.config "iso";
+        testInstallISO = makeImage self.nixosConfigurations.test.config "iso";
       };
     };
 }

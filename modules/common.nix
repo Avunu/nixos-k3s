@@ -56,8 +56,6 @@ in
     util-linux
   ];
 
-  imports = [ "${pkgs.path}/nixos/modules/profiles/qemu-guest.nix" ];
-
   networking = {
     dhcpcd.enable = false;
     interfaces.eth0.useDHCP = false;
@@ -86,12 +84,6 @@ in
 
   services = {
 
-    cloud-init = {
-      enable = true;
-      network.enable = true;
-      config = builtins.readFile ./cloud-init.yaml;
-    };
-
     k3s = {
       enable = true;
       extraFlags = [
@@ -118,7 +110,7 @@ in
 
     openiscsi = {
       enable = true;
-      name = "iqn.2021-05.io.avunu.k3s:" + builtins.readFile "/etc/hostname";
+      name = "iqn.2021-05.local.k3s:" + builtins.readFile "/etc/hostname";
     };
 
     openssh = {
