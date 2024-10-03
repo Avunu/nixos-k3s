@@ -80,7 +80,8 @@
         "--disable=traefik"
         "--disable=servicelb"
         "--disable=local-storage"
-        "--container-runtime-endpoint=unix:///run/containerd/containerd.sock"
+        "--docker"
+        "--container-runtime-endpoint=unix:///run/podman/podman.sock"
       ];
       tokenFile = "/etc/k3s/tokenFile";
       environmentFile = "/etc/k3s/envs";
@@ -143,9 +144,15 @@
   };
 
   virtualisation = {
-    containerd = {
+    containers.storage.settings = {
+      storage = {
+        driver = "btrfs";
+        graphroot = "/var/lib/containers/storage";
+        runroot = "/run/containers/storage";
+      };
+    };
+    podman = {
       enable = true;
-      extraConfig = builtins.readFile ./containerd.toml;
     };
   };
 
