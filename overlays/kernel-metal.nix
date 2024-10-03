@@ -1,10 +1,16 @@
 # overlays/kernel-agent.nix
-self: super: {
+self: super:
+
+let
+  pkgs = self;
+  inherit (pkgs) lib recurseIntoAttrs;
+in
+{
   linuxPackages_metal = super.linuxPackages_latest.extend (
     self: super: {
       kernel =
         (super.kernel.override {
-          structuredExtraConfig = with super.lib.kernel; {
+          structuredExtraConfig = with lib.kernel; {
             # Basic hardware support (adjust based on your hardware)
             SMP = yes;
             MCORE2 = yes;
@@ -40,7 +46,11 @@ self: super: {
 
             # Specific configs for agent nodes
             PREEMPT = yes;
-            HZ = hz1000;
+            HZ = freeform "1000";
+            HZ_1000 = yes;
+
+            # disable things we don't need on modern systems
+            AGP = lib.mkForce no;
 
             # Debugging (you might want to disable these in production)
             DEBUG_KERNEL = yes;
@@ -49,11 +59,11 @@ self: super: {
         }).overrideAttrs
           {
             extraConfig = ''
-              CC = "${self.buildPackages.llvmPackages_19.clang}/bin/clang"
+              CC = "${pkgs.llvmPackages_19.clang}/bin/clang"
               CFLAGS = "$CFLAGS -O3 -flto -march=x86-64-v4 -mtune=x86-64-v4"
               LDFLAGS = "$LDFLAGS -flto"
             '';
-            stdenv = self.buildPackages.ccacheStdenv;
+            stdenv = pkgs.ccacheStdenv;
           };
     }
   );
