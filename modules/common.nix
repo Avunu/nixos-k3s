@@ -89,12 +89,11 @@ in
       extraFlags = [
         "--cluster-cidr=10.42.0.0/16"
         "--cluster-dns=10.43.0.10"
-        "--container-runtime-endpoint=unix:///run/podman/podman.sock"
+        "--container-runtime-endpoint=unix:///run/crio/crio.sock"
         "--disable-cloud-controller"
         "--disable=local-storage"
         "--disable=servicelb"
         "--disable=traefik"
-        "--docker"
         "--flannel-backend=vxlan"
         "--kubelet-arg='cloud-provider=external'"
         "--kubelet-arg='provider-id=openstack://$master_id'"
@@ -161,15 +160,10 @@ in
   };
 
   virtualisation = {
-    containers.storage.settings = {
-      storage = {
-        driver = "btrfs";
-        graphroot = "/var/lib/containers/storage";
-        runroot = "/run/containers/storage";
-      };
-    };
-    podman = {
+    cri-o = {
       enable = true;
+      storageDriver = "btrfs";
+      runtime = "crun";
     };
   };
 
