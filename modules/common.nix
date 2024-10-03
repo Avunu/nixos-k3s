@@ -110,6 +110,7 @@
     isNormalUser = true;
     extraGroups = [
       "wheel"
+      "nixbld"
     ];
     openssh.authorizedKeys.keys = [
       (builtins.readFile "/etc/pubkey")

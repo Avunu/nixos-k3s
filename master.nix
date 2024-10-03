@@ -33,7 +33,7 @@
   environment.systemPackages = [ pkgs.efibootmgr ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-root";
+    device = "/dev/vda";
     fsType = "ext4";
   };
 
@@ -72,6 +72,6 @@
   virtualisation = {
     useBootLoader = true;
     useEFIBoot = true;
-    bootDevice = "/dev/vda";
+    rootDevice = "/dev/vda";
   };
 }

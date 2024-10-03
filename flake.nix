@@ -10,7 +10,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
-          ./overlays/kernel.nix
+          (import ./overlays/kernel.nix)
         ];
       };
       lib = nixpkgs.lib;
@@ -18,17 +18,17 @@
     {
       nixosConfigurations = {
         agent = lib.nixosSystem {
-          inherit system;
+          inherit system pkgs;
           modules = [ ./agent.nix ];
         };
 
         master = lib.nixosSystem {
-          inherit system;
+          inherit system pkgs;
           modules = [ ./master.nix ];
         };
 
         test = lib.nixosSystem {
-          inherit system;
+          inherit system pkgs;
           modules = [ ./modules/test/test.nix ];
         };
       };
