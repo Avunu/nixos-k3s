@@ -79,6 +79,6 @@
   virtualisation = {
     useBootLoader = true;
     useEFIBoot = true;
-    rootDevice = "/dev/vda";
+    rootDevice = "/dev/disk/by-label/nixos";
   };
 }

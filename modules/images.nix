@@ -14,6 +14,9 @@
           diskSize = 8192;
           format = "qcow2-compressed";
           installBootLoader = true;
+          touchEFIVars = true;
+          fsType = "ext4";
+          label = "nixos";
           partitionTableType = "efi";
         }
       );

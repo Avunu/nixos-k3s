@@ -1,0 +1,41 @@
+networks:
+  app_traffic:
+    name: app-network
+    vlan_id: 1
+    subnet: 10.1.0.0/16
+    gateway: 10.1.0.1
+    dhcp_range: 
+      start: 10.1.0.2
+      end: 10.1.255.254
+    internet_access: true
+    nat: true
+
+  k3s_api:
+    name: k3s-api-network
+    vlan_id: 200
+    subnet: 10.200.0.0/16
+    dhcp_range:
+      start: 10.200.0.2
+      end: 10.200.255.254
+    internet_access: false
+    nat: false
+
+  storage:
+    name: storage-network
+    vlan_id: 300
+    subnet: 10.45.0.0/16
+    dhcp_range:
+      start: 10.45.0.2
+      end: 10.45.255.254
+    internet_access: false
+    nat: false
+    jumbo_frames:
+      enabled: true
+      mtu: 9000
+
+global_settings:
+  dns_servers:
+    - 8.8.8.8
+    - 8.8.4.4
+  ntp_servers:
+    - pool.ntp.org

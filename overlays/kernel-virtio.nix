@@ -12,6 +12,8 @@ in
         (super.kernel.override {
           structuredExtraConfig = with lib.kernel; {
 
+            # see https://raw.githubusercontent.com/NixOS/nixpkgs/refs/heads/master/pkgs/os-specific/linux/kernel/common-config.nix
+
             # Explicitly disable options from common-config.nix
             RANDOM_KMALLOC_CACHES = lib.mkForce (option no);
             RCU_LAZY = lib.mkForce (option no);
@@ -37,18 +39,27 @@ in
             KVM_GUEST = yes;
 
             # Virtio support
+            DRM = yes;
+            DRM_FBDEV_EMULATION = yes;
+            DRM_VIRTIO_GPU = yes;
+            PCI = yes;
+            PCI_HOST_GENERIC = yes;
             VIRTIO = yes;
-            VIRTIO_PCI = yes;
-            VIRTIO_NET = yes;
+            VIRTIO_BALLOON = yes;
             VIRTIO_BLK = yes;
             VIRTIO_CONSOLE = yes;
-            VIRTIO_BALLOON = yes;
             VIRTIO_INPUT = yes;
+            VIRTIO_MENU = yes;
             VIRTIO_MMIO = yes;
+            VIRTIO_NET = yes;
+            VIRTIO_PCI = yes;
 
             # Minimal filesystem support
             EXT4_FS = yes;
             FUSE_FS = yes;
+            BTRFS_FS = no;
+            XFS_FS = no;
+            F2FS_FS = lib.mkForce no;
 
             # Networking
             NET = yes;
@@ -61,11 +72,10 @@ in
             NET_VENDOR_INTEL = no;
             NET_VENDOR_AMD = no;
             NET_VENDOR_REALTEK = no;
-            DRM = lib.mkForce no;
             AGP = lib.mkForce no;
             # USB_SUPPORT = lib.mkForce no;
             IPV6 = yes;
-            # WIRELESS = no;
+            WIRELESS = no;
             WLAN = no;
 
             # Performance and size optimizations
