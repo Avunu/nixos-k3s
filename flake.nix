@@ -10,6 +10,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
+          (import ./overlays/ccache.nix)
           (import ./overlays/kernel-metal.nix)
           (import ./overlays/kernel-virtio.nix)
         ];

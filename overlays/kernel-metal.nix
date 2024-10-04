@@ -59,11 +59,11 @@ in
         }).overrideAttrs
           {
             extraConfig = ''
-              CC = "${pkgs.llvmPackages_19.clang}/bin/clang"
+              CC = "${pkgs.llvmPackages_latest.clang}/bin/clang"
               CFLAGS = "$CFLAGS -O3 -flto -march=x86-64-v4 -mtune=x86-64-v4"
               LDFLAGS = "$LDFLAGS -flto"
             '';
-            stdenv = pkgs.ccacheStdenv;
+            stdenv = pkgs.ccacheClangStdenv;
           };
     }
   );

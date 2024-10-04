@@ -121,11 +121,11 @@ in
         }).overrideAttrs
           (oldAttrs: {
             extraConfig = ''
-              CC = "${pkgs.llvmPackages_19.clang}/bin/clang"
+              CC = "${pkgs.llvmPackages_latest.clang}/bin/clang"
               CFLAGS = "$CFLAGS -O3 -flto -march=x86-64-v3 -mtune=x86-64-v3"
               LDFLAGS = "$LDFLAGS -flto"
             '';
-            stdenv = pkgs.ccacheStdenv;
+            stdenv = pkgs.ccacheClangStdenv;
           });
     }
   );
