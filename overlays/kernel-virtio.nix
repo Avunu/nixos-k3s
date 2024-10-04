@@ -104,15 +104,17 @@ in
             # SECURITY = no;
             # SECCOMP = lib.mkForce no;
 
+            # Enable AIO support
+            AIO = yes;
+            # INOTIFY_USER = yes;
+            # SIGNALFD = yes;
+            # TIMERFD = yes;
+            # EPOLL = yes;
+
             # Additional optimizations
             ADVISE_SYSCALLS = no;
-            AIO = lib.mkForce no;
             COREDUMP = no;
             DNOTIFY = no;
-            SIGNALFD = no;
-            TIMERFD = no;
-            EPOLL = no;
-            INOTIFY_USER = no;
             FANOTIFY = lib.mkForce no;
           };
           ignoreConfigErrors = true;
