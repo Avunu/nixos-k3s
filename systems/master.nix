@@ -51,6 +51,9 @@
     k3s = {
       role = "server";
       disableAgent = true;
+      extraFlags = [
+        "--flannel-iface=eth0"
+      ];
     };
 
     qemuGuest.enable = true;

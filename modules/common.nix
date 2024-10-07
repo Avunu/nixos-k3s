@@ -4,6 +4,10 @@
   pkgs,
   ...
 }:
+
+let
+  networkConfig = (import ../network-config.nix).networkConfig;
+in
 {
   boot = {
     loader = {
@@ -68,8 +72,8 @@
     k3s = {
       enable = true;
       extraFlags = [
-        "--cluster-cidr=10.42.0.0/16"
-        "--cluster-dns=10.43.0.10"
+        "--cluster-cidr=${networkConfig.k3sApi.subnet}/${toString networkConfig.k3sApi.cidr}"
+        "--service-cidr=${networkConfig.appTraffic.subnet}/${toString networkConfig.appTraffic.cidr}"
         "--container-runtime-endpoint=unix:///run/crio/crio.sock"
         "--disable-cloud-controller"
         "--disable=local-storage"
@@ -78,7 +82,6 @@
         "--flannel-backend=vxlan"
         "--kubelet-arg='cloud-provider=external'"
         "--kubelet-arg='provider-id=openstack://$master_id'"
-        "--service-cidr=10.43.0.0/16"
       ];
       tokenFile = "/etc/k3s/tokenFile";
       environmentFile = "/etc/k3s/envs";
