@@ -9,6 +9,7 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
+        replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
         overlays = [
           (import ./overlays/ccache.nix)
           (import ./overlays/kernel-metal.nix)

@@ -7,20 +7,6 @@
 {
   boot = {
     growPartition = true;
-    initrd = {
-      availableKernelModules = [
-        "virtio_net"
-        "virtio_pci"
-        "virtio_mmio"
-        "virtio_blk"
-        "virtio_scsi"
-      ];
-      kernelModules = [
-        "virtio_balloon"
-        "virtio_console"
-        "virtio_rng"
-      ];
-    };
     kernelPackages = pkgs.linuxPackages_virtio;
   };
 
@@ -28,6 +14,7 @@
     ../modules/k3s-manifests.nix
     ../modules/netboot/server.nix
     ../modules/common.nix
+    (import <nixpkgs/nixos/modules/profiles/qemu-guest.nix>)
     (import <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>)
   ];
 
