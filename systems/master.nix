@@ -4,6 +4,10 @@
   pkgs,
   ...
 }:
+
+let
+  networkConfig = (import ../network-config.nix).networkConfig;
+in
 {
   boot = {
     growPartition = true;
@@ -31,11 +35,44 @@
     fsType = "vfat";
   };
 
-  networking.hostName = "k3s-master";
+  networking = {
+    hostName = "k3s-master";
+    interfaces.eth0 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = networkConfig.netBoot.masterIp;
+          prefixLength = networkConfig.netBoot.cidr;
+        }
+      ];
+    };
+    interfaces.eth1 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = networkConfig.appTraffic.masterIp;
+          prefixLength = networkConfig.appTraffic.cidr;
+        }
+      ];
+    };
+    interfaces.eth2 = {
+      useDHCP = false;
+      ipv4.addresses = [
+        {
+          address = networkConfig.k3sApi.masterIp;
+          prefixLength = networkConfig.k3sApi.cidr;
+        }
+      ];
+    };
+    defaultGateway = {
+      address = networkConfig.appTraffic.gateway;
+      interface = "eth0";
+    };
+  };
 
   netboot = {
-    interface = "enp0s3";
-    ipRange = "192.168.1.100,192.168.1.200";
+    interface = "eth0";
+    ipRange = "${networkConfig.netBoot.dhcpRange.start},${networkConfig.netBoot.dhcpRange.end}";
     domainName = "k3s.local";
   };
 

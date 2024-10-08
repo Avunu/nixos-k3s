@@ -31,10 +31,15 @@ let
       cc = stdenvPlatformLLVM.cc;
     }
   );
+
+  # Add sparce to the build environment
+  stdenvWithSparce = stdenvCcacheLLVM.override {
+    extraBuildInputs = [ pkgs.sparse ];
+  };
 in
 {
   stdenvLLVM = pkgs.addAttrsToDerivation {
     env.NIX_CC_USE_RESPONSE_FILE = "0";
     hardeningDisable = [ "fortify" ];
-  } stdenvCcacheLLVM;
+  } stdenvWithSparce;
 }

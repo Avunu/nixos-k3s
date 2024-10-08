@@ -1,4 +1,4 @@
-# modules/netboot-server.nix
+# modules/netboot/server.nix
 {
   config,
   lib,
@@ -9,7 +9,16 @@
 with lib;
 
 let
-  cfg = config.netboot;
+  cfg = config.netboot; # Create a custom module for the netboot initrd
+
+  # Create a minimal NixOS config for the netboot environment
+  netbootConfig =
+    (import "${pkgs.path}/nixos/lib/eval-config.nix" {
+      inherit (pkgs) system;
+      modules = [
+        ./client.nix
+      ];
+    }).config;
 in
 {
   options.netboot = {
@@ -42,8 +51,8 @@ in
     system.activationScripts.setupTftpboot = ''
       mkdir -p /var/tftpboot/EFI/BOOT
       cp ${pkgs.systemd}/lib/systemd/boot/efi/systemd-bootx64.efi /var/tftpboot/EFI/BOOT/BOOTX64.EFI
-      cp ${config.boot.kernelPackages.kernel}/bzImage /var/tftpboot/vmlinuz
-      cp ${config.system.build.initialRamdisk}/initrd /var/tftpboot/initrd
+      cp ${pkgs.linuxPackages_latest.kernel}/bzImage /var/tftpboot/vmlinuz
+      cp ${netbootConfig.system.build.initialRamdisk}/initrd /var/tftpboot/initrd
     '';
 
     # Create generic boot entry

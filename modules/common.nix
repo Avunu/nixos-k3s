@@ -30,7 +30,6 @@ in
     bashInteractive
     coreutils
     libiscsi
-    libiscsi
     nfs-utils
     nvme-cli
     openiscsi
@@ -45,6 +44,8 @@ in
     dhcpcd.enable = false;
     interfaces.eth0.useDHCP = false;
     useNetworkd = true;
+    firewall.enable = true;
+    nameservers = networkConfig.globalSettings.dnsServers;
   };
 
   nix = {
@@ -105,9 +106,18 @@ in
       };
     };
 
+    timesyncd.servers = networkConfig.globalSettings.ntpServers;
+
     qemuGuest.enable = true;
 
   };
+
+  # longhorn looks for nsenter in specific paths, /usr/local/bin is one of
+  # them so symlink the entire system/bin directory there.
+  # https://github.com/longhorn/longhorn/issues/2166#issuecomment-1864656450
+  systemd.tmpfiles.rules = [
+    "L+ /usr/local/bin - - - - /run/current-system/sw/bin/"
+  ];
 
   users.users.ops = {
     isNormalUser = true;
@@ -134,7 +144,7 @@ in
       };
       randomizedDelaySec = "45min";
     };
-    stateVersion = "24.05";
+    stateVersion = "24.11";
   };
 
   virtualisation = {

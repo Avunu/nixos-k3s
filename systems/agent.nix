@@ -4,6 +4,10 @@
   pkgs,
   ...
 }:
+
+let
+  networkConfig = (import ../network-config.nix).networkConfig;
+in
 {
   boot = {
     kernel.sysctl = {
@@ -35,6 +39,46 @@
     ./modules/common.nix
   ];
 
+  networking = {
+    bonds.bond0 = {
+      interfaces = [
+        "eth0"
+        "eth1"
+      ];
+      driverOptions = {
+        mode = "802.3ad";
+        miimon = "100";
+      };
+    };
+    interfaces.bond0 = {
+      useDHCP = true;
+    };
+    vlans = {
+      "${networkConfig.appTraffic.name}" = {
+        id = networkConfig.appTraffic.vlanId;
+        interface = "bond0";
+      };
+      "${networkConfig.k3sApi.name}" = {
+        id = networkConfig.k3sApi.vlanId;
+        interface = "bond0";
+      };
+      "${networkConfig.storage.name}" = {
+        id = networkConfig.storage.vlanId;
+        interface = "bond0";
+      };
+    };
+    interfaces.${networkConfig.appTraffic.name} = {
+      useDHCP = true;
+    };
+    interfaces.${networkConfig.k3sApi.name} = {
+      useDHCP = true;
+    };
+    interfaces.${networkConfig.storage.name} = {
+      useDHCP = true;
+      mtu = networkConfig.storage.jumboFrames.mtu;
+    };
+  };
+
   # Agent-specific configuration
   services = {
     btrfs.autoScrub = {
@@ -44,7 +88,10 @@
     };
 
     k3s = {
-      serverAddr = "https://10.24.0.254:6443";
+      extraFlags = [
+        "--flannel-iface=bond0" # Use the bonded interface for Flannel
+      ];
+      serverAddr = "https://${networkConfig.k3sApi.masterIp}:6443";
       role = "agent";
     };
   };

@@ -1,12 +1,26 @@
 # network-config.nix
 {
   networkConfig = rec {
+    netBoot = {
+      name = "netboot-network";
+      subnet = "10.0.0.0";
+      cidr = 16;
+      masterIp = "10.0.0.10";
+      dhcpRange = {
+        start = "10.0.0.20";
+        end = "10.0.255.254";
+      };
+      internetAccess = false;
+      nat = false;
+    };
+
     appTraffic = {
       name = "app-network";
       vlanId = 100;
       subnet = "10.1.0.0";
       cidr = 16;
       gateway = "10.1.0.1";
+      masterIp = "10.1.1.10";
       dhcpRange = {
         start = "10.1.0.20";
         end = "10.1.254.254";
@@ -20,6 +34,7 @@
       vlanId = 200;
       subnet = "10.200.0.0";
       cidr = 16;
+      masterIp = "10.200.1.10";
       dhcpRange = {
         start = "10.200.0.20";
         end = "10.200.255.254";
