@@ -11,7 +11,7 @@ in
 {
   boot = {
     growPartition = true;
-    kernelPackages = pkgs.linuxPackages_virtio;
+    kernelPackages = pkgs.linuxPackages_testing;
   };
 
   imports = [

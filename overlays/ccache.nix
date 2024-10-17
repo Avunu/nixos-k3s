@@ -33,13 +33,13 @@ let
   );
 
   # Add sparce to the build environment
-  stdenvWithSparce = stdenvCcacheLLVM.override {
-    extraBuildInputs = [ pkgs.sparse ];
+  stdenvWithExtras = stdenvCcacheLLVM.override {
+    extraBuildInputs = [ pkgs.sparse pkgs.rustc pkgs.rust-bindgen pkgs.rustfmt ];
   };
 in
 {
   stdenvLLVM = pkgs.addAttrsToDerivation {
     env.NIX_CC_USE_RESPONSE_FILE = "0";
     hardeningDisable = [ "fortify" ];
-  } stdenvWithSparce;
+  } stdenvWithExtras;
 }

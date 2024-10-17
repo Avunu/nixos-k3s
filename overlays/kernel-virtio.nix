@@ -6,7 +6,7 @@ let
   inherit (pkgs) lib;
 in
 {
-  linuxPackages_virtio = super.linuxPackages_latest.extend (
+  linuxPackages_virtio = super.linuxPackages_testing.extend (
     self: super: {
       kernel = super.kernel.override {
         stdenv = pkgs.stdenvLLVM;
@@ -21,7 +21,7 @@ in
           "KCPPFLAGS+=-march=haswell"
           "KCPPFLAGS+=-mtune=haswell"
           "KCPPFLAGS+=-O3"
-          "KRUSTFLAGS+=-Copt-level=3"
+          "KRUSTFLAGS+=-Copt-level=2"
           "LDFLAGS+=-O3"
           "LLVM_IAS=1"
           "LLVM=1"
@@ -29,7 +29,13 @@ in
           "KBUILD_VERBOSE=1" # Another way to enable verbose output
           "C=1" # Enable sparse warnings
         ];
-        # defconfig = "${placeholder "src"}/kernel/configs/kvm_guest.config";
+        # enable rust inputs
+        extraBuildInputs = with pkgs; [
+          sparse
+          rustc
+          rust-bindgen
+          rustfmt
+        ];
         structuredExtraConfig = with lib.kernel; {
           ## Clang/LLVM Build Options
           CC_IS_CLANG = yes;
@@ -41,6 +47,9 @@ in
           LTO_CLANG_THIN = yes;
           # MODULE_COMPRESS_ZSTD = yes;
           DEBUG_INFO_BTF = lib.mkForce no;
+
+          # enable rust
+          RUST = yes;
 
           # ## Base Configuration
           # EXPERT = yes;
