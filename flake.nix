@@ -3,19 +3,20 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs =
-    { self, nixpkgs, ... }:
+  outputs = { self, nixpkgs }:
     let
       system = "x86_64-linux";
+
       pkgs = import nixpkgs {
         inherit system;
-        replaceStdenv = { pkgs }: pkgs.ccacheStdenv;
         overlays = [
-          (import ./overlays/ccache.nix)
-          (import ./overlays/kernel-metal.nix)
-          (import ./overlays/kernel-virtio.nix)
+          (final: prev: {
+            ccacheClangStdenv = final.callPackage ./pkgs/stdenv.nix {};
+            inherit (self.packages.${system}) linux_metal linux_virtio;
+          })
         ];
       };
+
       lib = nixpkgs.lib;
     in
     {
@@ -37,6 +38,9 @@
       };
 
       packages.${system} = {
+        linux_metal = pkgs.callPackage ./pkgs/kernel-metal.nix {};
+        linux_virtio = pkgs.callPackage ./pkgs/kernel-virtio.nix {};
+
         agentImage = self.nixosConfigurations.agent.config.system.build.image;
         masterImage = self.nixosConfigurations.master.config.system.build.image;
         testImage = self.nixosConfigurations.test.config.system.build.image;
