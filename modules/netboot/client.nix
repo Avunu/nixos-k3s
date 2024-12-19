@@ -1,6 +1,7 @@
 { pkgs, lib, ... }:
 {
   boot = {
+    kernelPackages = pkgs.linuxPackages_testing;
     initrd = {
       availableKernelModules = [
         "btrfs"
@@ -9,7 +10,6 @@
         "nvme"
       ];
       kernelModules = [ "btrfs" ];
-      kernelPackages = pkgs.linuxPackages_testing;
 
       extraUtilsCommands = ''
         copy_bin_and_libs ${pkgs.btrfs-progs}/bin/btrfs

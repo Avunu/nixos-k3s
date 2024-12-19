@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:blitz/nixpkgs/kernel-lld";
   };
 
   outputs = { self, nixpkgs }:
