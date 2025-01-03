@@ -50,8 +50,9 @@ download_from_github "Avunu/nixos-k3s" "install/flake.agent.nix" "/mnt/etc/nixos
 # Download and place required files
 mkdir -p /mnt/etc/k3s
 download_from_github "Avunu/nixos-k3s-configs" "environment" "/mnt/etc/environment"
-download_from_github "Avunu/nixos-k3s-configs" "tokenFile" "/mnt/etc/k3s/tokenFile"
 download_from_github "Avunu/nixos-k3s-configs" "envs" "/mnt/etc/k3s/envs"
+download_from_github "Avunu/nixos-k3s-configs" "pubkey" "/mnt/etc/pubkey"
+download_from_github "Avunu/nixos-k3s-configs" "tokenFile" "/mnt/etc/k3s/tokenFile"
 
 # fix permissions
 chmod 600 /mnt/etc/k3s/tokenFile

@@ -28,7 +28,12 @@
 
         master = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./systems/master.nix ];
+          specialArgs = { inherit nixpkgs; };
+          modules = [ 
+            ./systems/master.nix
+            "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
+            "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
+          ];
         };
 
         test = lib.nixosSystem {

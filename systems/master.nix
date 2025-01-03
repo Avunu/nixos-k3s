@@ -18,8 +18,6 @@ in
     ../modules/k3s-manifests.nix
     ../modules/netboot/server.nix
     ../modules/common.nix
-    (import <nixpkgs/nixos/modules/profiles/qemu-guest.nix>)
-    (import <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>)
   ];
 
   environment.systemPackages = [ pkgs.efibootmgr ];

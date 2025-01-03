@@ -85,7 +85,7 @@ in
         "--kubelet-arg='provider-id=openstack://$master_id'"
       ];
       tokenFile = "/etc/k3s/tokenFile";
-      environmentFile = "/etc/k3s/envs";
+      # environmentFile = "/etc/k3s/envs";
     };
 
     fstrim = {
