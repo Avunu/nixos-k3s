@@ -87,6 +87,27 @@ in
       interval = "daily";
     };
 
+    # JuiceFS configuration for distributed storage
+    juicefs = {
+      enable = true;
+      filesystems = {
+        "k3s-storage" = {
+          metaUrl = "redis://${networkConfig.k3sApi.masterIp}:6379/1";
+          storage = "s3";
+          bucket = "juicefs-k3s";
+          endpoint = "https://s3.gra.io.cloud.ovh.net";
+          mountPoint = "/mnt/juicefs";
+          formatOnce = false; # Only format on master
+          mountOptions = [
+            "--cache-dir=/var/cache/juicefs"
+            "--cache-size=2048"
+            "--max-uploads=20"
+            "--writeback"
+          ];
+        };
+      };
+    };
+
     k3s = {
       extraFlags = [
         "--flannel-iface=bond0" # Use the bonded interface for Flannel

@@ -29,6 +29,7 @@ in
   environment.systemPackages = with pkgs; [
     bashInteractive
     coreutils
+    juicefs
     libiscsi
     nfs-utils
     nvme-cli
@@ -38,6 +39,7 @@ in
 
   imports = [
     ./images.nix
+    ./juicefs.nix
   ];
 
   networking = {

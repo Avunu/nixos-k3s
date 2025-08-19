@@ -83,6 +83,39 @@ in
       config = builtins.readFile ./cloud-init.yaml;
     };
 
+    # Redis for JuiceFS metadata storage
+    redis.servers."juicefs" = {
+      enable = true;
+      port = 6379;
+      bind = "127.0.0.1";
+      databases = 16;
+      settings = {
+        protected-mode = "no";
+        tcp-keepalive = 60;
+      };
+    };
+
+    # JuiceFS configuration for distributed storage
+    juicefs = {
+      enable = true;
+      filesystems = {
+        "k3s-storage" = {
+          metaUrl = "redis://127.0.0.1:6379/1";
+          storage = "s3";
+          bucket = "juicefs-k3s";
+          endpoint = "https://s3.gra.io.cloud.ovh.net";
+          mountPoint = "/mnt/juicefs";
+          formatOnce = true;
+          mountOptions = [
+            "--cache-dir=/var/cache/juicefs"
+            "--cache-size=1024"
+            "--max-uploads=20"
+            "--writeback"
+          ];
+        };
+      };
+    };
+
     k3s = {
       role = "server";
       disableAgent = true;
