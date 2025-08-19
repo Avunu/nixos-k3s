@@ -74,12 +74,6 @@ in
 
   # Agent-specific configuration
   services = {
-    btrfs.autoScrub = {
-      enable = true;
-      fileSystems = [ "/" ];
-      interval = "daily";
-    };
-
     k3s = {
       extraFlags = [
         "--flannel-iface=bond0" # Use the bonded interface for Flannel

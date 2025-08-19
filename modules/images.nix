@@ -8,6 +8,9 @@
 {
   system = {
     build = {
+      # For systems with disko configuration, we'll rely on disko's 
+      # built-in support. For now, let's keep the traditional approach
+      # but update it to work with btrfs
       image = lib.mkForce (
         pkgs.callPackage "${pkgs.path}/nixos/lib/make-disk-image.nix" {
           inherit config lib pkgs;
@@ -15,8 +18,9 @@
           format = "qcow2-compressed";
           installBootLoader = true;
           touchEFIVars = true;
-          fsType = "ext4";
-          label = "nixos";
+          # Update to use btrfs to match our disko config
+          fsType = "btrfs";
+          label = "rootfs";
           partitionTableType = "efi";
         }
       );
