@@ -19,6 +19,14 @@
         target = "cert-manager.yaml";
         content = builtins.import ../manifests/cert-manager.nix;
       };
+      octaviaIngressController = {
+        target = "octavia-ingress-controller.yaml";
+        content = builtins.import ../manifests/octavia-ingress-controller.nix;
+      };
+      octaviaIngressClass = {
+        target = "octavia-ingress-class.yaml";
+        content = builtins.import ../manifests/octavia-ingress-class.nix;
+      };
     };
   };
 }
