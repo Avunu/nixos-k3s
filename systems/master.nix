@@ -87,7 +87,7 @@ in
     k3s = {
       role = "server";
       disableAgent = true;
-      extraFlags = [
+      extraFlags = lib.mkAfter [
         "--flannel-iface=eth0"
         "--datastore-endpoint=https://${networkConfig.k3sApi.masterIp}:2379"
         "--datastore-cafile=/var/lib/etcd/certs/ca.crt"
