@@ -21,7 +21,7 @@ in
       "vfio_pci"
       "iscsi_tcp"
     ];
-    kernelPackages = pkgs.linuxPackages_testing;
+    kernelPackages = pkgs.linuxPackages_latest;
   };
 
   # root file system

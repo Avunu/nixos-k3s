@@ -11,7 +11,7 @@ in
 {
   boot = {
     growPartition = true;
-    kernelPackages = pkgs.linuxPackages_testing;
+    kernelPackages = pkgs.linuxPackages_latest;
   };
 
   imports = [
