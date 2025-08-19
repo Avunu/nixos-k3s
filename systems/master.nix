@@ -17,6 +17,7 @@ in
   imports = [
     ../modules/k3s-manifests.nix
     ../modules/netboot/server.nix
+    ../modules/etcd.nix
     ../modules/common.nix
   ];
 
@@ -88,12 +89,20 @@ in
       disableAgent = true;
       extraFlags = [
         "--flannel-iface=eth0"
+        "--datastore-endpoint=https://${networkConfig.k3sApi.masterIp}:2379"
+        "--datastore-cafile=/var/lib/etcd/certs/ca.crt"
+        "--datastore-certfile=/var/lib/etcd/certs/server.crt"
+        "--datastore-keyfile=/var/lib/etcd/certs/server.key"
       ];
     };
 
     qemuGuest.enable = true;
 
   };
+
+  # Ensure k3s waits for etcd to be ready
+  systemd.services.k3s.after = [ "etcd.service" ];
+  systemd.services.k3s.wants = [ "etcd.service" ];
 
   # Auto-upgrade settings
   system.autoUpgrade = {
