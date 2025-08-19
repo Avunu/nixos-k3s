@@ -7,7 +7,7 @@
     };
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, disko }:
     let
       system = "x86_64-linux";
 
@@ -27,13 +27,17 @@
       nixosConfigurations = {
         agent = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./systems/agent.nix ];
+          modules = [ 
+            disko.nixosModules.disko
+            ./systems/agent.nix 
+          ];
         };
 
         master = lib.nixosSystem {
           inherit system pkgs;
           specialArgs = { inherit nixpkgs; };
           modules = [ 
+            disko.nixosModules.disko
             ./systems/master.nix
             "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
             "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
@@ -42,7 +46,10 @@
 
         test = lib.nixosSystem {
           inherit system pkgs;
-          modules = [ ./systems/test/test.nix ];
+          modules = [ 
+            disko.nixosModules.disko
+            ./systems/test/test.nix 
+          ];
         };
       };
 

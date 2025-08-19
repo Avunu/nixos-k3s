@@ -7,15 +7,13 @@
 
 {
   imports = [
+    ../modules/disko-test.nix
     ./common.test.nix
   ];
 
   networking.hostName = "k3s-master";
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "ext4";
-  };
+  # File system configured by disko
 
   services.k3s = {
     enable = true;

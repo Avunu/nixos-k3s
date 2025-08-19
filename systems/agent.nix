@@ -24,17 +24,10 @@ in
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  # root file system
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "btrfs";
-    options = [
-      "subvol=@"
-      "compress=zstd"
-    ];
-  };
+  # root file system configured by disko
 
   imports = [
+    ./modules/disko-agent.nix
     ./modules/netboot/client.nix
     ./modules/common.nix
   ];
@@ -81,12 +74,6 @@ in
 
   # Agent-specific configuration
   services = {
-    btrfs.autoScrub = {
-      enable = true;
-      fileSystems = [ "/" ];
-      interval = "daily";
-    };
-
     k3s = {
       extraFlags = [
         "--flannel-iface=bond0" # Use the bonded interface for Flannel

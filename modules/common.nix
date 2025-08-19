@@ -70,6 +70,13 @@ in
 
   services = {
 
+    # BTRFS maintenance - scrub daily to detect errors
+    btrfs.autoScrub = {
+      enable = true;
+      fileSystems = [ "/" ];
+      interval = "daily";
+    };
+
     k3s = {
       enable = true;
       extraFlags = [
