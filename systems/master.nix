@@ -10,28 +10,17 @@ let
 in
 {
   boot = {
-    growPartition = true;
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
   imports = [
+    ../modules/disko-master.nix
     ../modules/k3s-manifests.nix
     ../modules/netboot/server.nix
     ../modules/common.nix
   ];
 
   environment.systemPackages = [ pkgs.efibootmgr ];
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    autoResize = true;
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/ESP";
-    fsType = "vfat";
-  };
 
   networking = {
     hostName = "k3s-master";
@@ -104,6 +93,5 @@ in
   virtualisation = {
     useBootLoader = true;
     useEFIBoot = true;
-    rootDevice = "/dev/disk/by-label/nixos";
   };
 }

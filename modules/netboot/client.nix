@@ -24,10 +24,9 @@
       systemd-boot.enable = true;
     };
   };
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-root";
-    fsType = "btrfs";
-  };
+  
+  # File system configured by disko
+  
   system = {
     stateVersion = "24.11";
   };
