@@ -3,6 +3,10 @@
   # Server-specific configuration
   services.k3s = {
     manifests = {
+      juicefs = {
+        target = "juicefs.yaml";
+        content = builtins.import ../manifests/juicefs.nix;
+      };
       longhorn = {
         target = "longhorn.yaml";
         content = builtins.import ../manifests/longhorn.nix;

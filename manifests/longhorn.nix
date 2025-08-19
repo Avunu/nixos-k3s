@@ -12,15 +12,28 @@
     targetNamespace = "longhorn-system";
     valuesContent = ''
       defaultSettings:
-        defaultDataPath: /var/lib/longhorn
+        defaultDataPath: /mnt/juicefs/longhorn
+        defaultReplicaCount: 2
+        guaranteedEngineManagerCPU: 12
+        guaranteedReplicaManagerCPU: 12
       persistence:
-        defaultClass: true
-        defaultClassReplicaCount: 3
+        defaultClass: false
+        defaultClassReplicaCount: 2
       csi:
         attacherReplicaCount: 1
         provisionerReplicaCount: 1
       ingress:
         enabled: false
+      longhornManager:
+        tolerations:
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
+      longhornDriver:
+        tolerations:
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
     '';
   };
 }
