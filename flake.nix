@@ -44,6 +44,11 @@
           inherit system pkgs;
           modules = [ ./systems/test/test.nix ];
         };
+
+        etcd-test = lib.nixosSystem {
+          inherit system pkgs;
+          modules = [ ./systems/test/etcd-test.nix ];
+        };
       };
 
       packages.${system} = {
@@ -53,10 +58,12 @@
         agentImage = self.nixosConfigurations.agent.config.system.build.image;
         masterImage = self.nixosConfigurations.master.config.system.build.image;
         testImage = self.nixosConfigurations.test.config.system.build.image;
+        etcdTestImage = self.nixosConfigurations.etcd-test.config.system.build.image;
 
         agentInstallISO = self.nixosConfigurations.agent.config.system.build.isoImage;
         masterInstallISO = self.nixosConfigurations.master.config.system.build.isoImage;
         testInstallISO = self.nixosConfigurations.test.config.system.build.isoImage;
+        etcdTestInstallISO = self.nixosConfigurations.etcd-test.config.system.build.isoImage;
       };
     };
 }
