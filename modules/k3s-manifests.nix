@@ -23,6 +23,10 @@
         target = "octavia-ingress-controller.yaml";
         content = builtins.import ../manifests/octavia-ingress-controller.nix;
       };
+      octaviaIngressClass = {
+        target = "octavia-ingress-class.yaml";
+        content = builtins.import ../manifests/octavia-ingress-class.nix;
+      };
     };
   };
 }
