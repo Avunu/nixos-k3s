@@ -1,10 +1,21 @@
 #!/bin/bash
+#
+# Install a bare-metal NixOS k3s agent onto two drives (btrfs RAID1).
+#
+# Usage:
+#   K3S_CONFIGS_REPO=<owner>/<repo> install-nixos-agent.sh <drive1> <drive2>
+#
+# K3S_CONFIGS_REPO names the (private) GitHub repository that holds this
+# cluster's secrets and settings. Its root must contain the files
+# `environment`, `envs`, `pubkey` and `tokenFile` (see environment.template and
+# k3s-env.template in this directory). The GitHub access token you are prompted
+# for needs read access to that repository.
 
 set -e
 
 # Function to prompt for GitHub access token
 get_github_token() {
-    read -sp "Enter your GitHub access token: " GITHUB_TOKEN
+    read -rsp "Enter your GitHub access token: " GITHUB_TOKEN
     echo
 }
 
@@ -18,7 +29,15 @@ download_from_github() {
 
 # Check if correct number of arguments is provided
 if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <drive1> <drive2>"
+    echo "Usage: K3S_CONFIGS_REPO=<owner>/<repo> $0 <drive1> <drive2>"
+    exit 1
+fi
+
+# The cluster configuration repository is deliberately not hard-coded: it is
+# private to whoever runs the cluster. Fail before anything destructive happens.
+if [[ ! "${K3S_CONFIGS_REPO:-}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+    echo "Set K3S_CONFIGS_REPO to the <owner>/<repo> of your cluster configuration repository." >&2
+    echo "Usage: K3S_CONFIGS_REPO=<owner>/<repo> $0 <drive1> <drive2>" >&2
     exit 1
 fi
 
@@ -49,10 +68,10 @@ download_from_github "Avunu/nixos-k3s" "install/flake.agent.nix" "/mnt/etc/nixos
 
 # Download and place required files
 mkdir -p /mnt/etc/k3s
-download_from_github "Avunu/nixos-k3s-configs" "environment" "/mnt/etc/environment"
-download_from_github "Avunu/nixos-k3s-configs" "envs" "/mnt/etc/k3s/envs"
-download_from_github "Avunu/nixos-k3s-configs" "pubkey" "/mnt/etc/pubkey"
-download_from_github "Avunu/nixos-k3s-configs" "tokenFile" "/mnt/etc/k3s/tokenFile"
+download_from_github "$K3S_CONFIGS_REPO" "environment" "/mnt/etc/environment"
+download_from_github "$K3S_CONFIGS_REPO" "envs" "/mnt/etc/k3s/envs"
+download_from_github "$K3S_CONFIGS_REPO" "pubkey" "/mnt/etc/pubkey"
+download_from_github "$K3S_CONFIGS_REPO" "tokenFile" "/mnt/etc/k3s/tokenFile"
 
 # fix permissions
 chmod 600 /mnt/etc/k3s/tokenFile
